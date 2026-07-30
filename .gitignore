@@ -1,0 +1,4 @@
+node_modules
+
+supabase/.env          # 프로덕션 DB 연결 문자열, 서비스 롤 키 등
+supabase/.branches/    # 브랜치 메타데이터
