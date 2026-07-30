@@ -1,8 +1,8 @@
 {
-  "deno.enablePaths": [
-    "supabase/functions"
-  ],
+  "deno.enable": true,
   "deno.lint": true,
+  "deno.enablePaths": ["supabase/functions"],
+  "deno.importMap": "supabase/functions/deno.json",
   "deno.unstable": [
     "bare-node-builtins",
     "byonm",
@@ -20,5 +20,8 @@
   ],
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "json.schemaDownload.trustedDomains": {
+    "https://deno.land": true
   }
 }
