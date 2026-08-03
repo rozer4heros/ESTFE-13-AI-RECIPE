@@ -28,12 +28,10 @@ function RecentRecipes({}) {
     })();
   }, []);
 
-  console.log(items);
-
   return (
     <>
       {items.map(item => (
-        <article>
+        <article key={item.id}>
           {item.image_url && <img src={item.image_url} alt={item.title} />}
           <div>
             <h3>{item.title}</h3>
