@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
+import RecentRecipes from "./components/RecentRecipes";
+
 function App() {
   const [title, setTitle] = useState("");
   const [result, setResult] = useState(null);
@@ -68,6 +70,10 @@ function App() {
           {result.image_url && <img src={result.image_url} alt={result.title} />}
         </div>
       )}
+      <hr />
+      <section className="list-section">
+        <RecentRecipes />
+      </section>
     </>
   );
 }
