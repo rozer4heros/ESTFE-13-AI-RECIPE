@@ -1,4 +1,5 @@
 import { withSupabase } from "npm:@supabase/server@^1";
+import type { Database } from "../../../database.types.ts";
 
 // 환경변수 가져오기
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -14,7 +15,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 export default {
-  fetch: withSupabase(
+  fetch: withSupabase<Database>(
     { auth: "publishable" },
     async (req, ctx) => {
       // 1. CORS 사전 요청 처리
@@ -141,18 +142,18 @@ export default {
         // 16. 업로드된 이미지의 공개 URL 생성
 
         // 17. 레시피와 이미지 정보를 데이터베이스에 저장
-        // const { error: insertError } = await admin.from("recipes").insert({
-        // title,
-        // recipe,
-        // image_url,
-        // });
+        const { error: insertError } = await admin.from("recipes").insert({
+          title,
+          recipe,
+          image_url,
+        });
 
         // 18. 데이터베이스 저장 오류 확인
-        // if (insertError) {
-        return jsonResponse({
-          error: "Database insert failed",
-        });
-        // }
+        if (insertError) {
+          return jsonResponse({
+            error: "Database insert failed",
+          });
+        }
 
         // 19. 생성 결과를 프론트엔드에 반환
         return jsonResponse({
