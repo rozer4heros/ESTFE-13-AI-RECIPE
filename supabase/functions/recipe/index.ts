@@ -59,7 +59,7 @@ export default {
         };
 
         const chatResponse = await fetch(
-          "https://api.openai.com/v1/completions",
+          "https://api.openai.com/v1/chat/completions",
           {
             method: "POST",
             headers: {
@@ -75,7 +75,7 @@ export default {
         if (!chatResponse.ok) {
           return jsonResponse(
             {
-              error: "Creating OpenAI recipe failed",
+              error: "openai_recipe_failed",
               status: chatResponse.status,
               detail: chatJson?.error?.message ??
                 "Creating OpenAI recipe failed",
@@ -112,7 +112,7 @@ export default {
         if (!imageResponse.ok) {
           return jsonResponse(
             {
-              error: "Creating OpenAI image failed",
+              error: "openai_recipe_failed",
               status: imageResponse.status,
               detail: imageJson?.error?.message ??
                 "Creating OpenAI image failed",
