@@ -14,6 +14,17 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+function decodeBase64(base64: string) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return bytes;
+}
+
 export default {
   fetch: withSupabase<Database>(
     { auth: "publishable" },
@@ -23,13 +34,13 @@ export default {
 
       // 2. POST 요청인지 확인
       if (req.method !== "POST") {
-        return jsonResponse({ error: "Method not allowed." }, 405);
+        return jsonResponse({ error: "method_not_allowed." }, 405);
       }
 
       try {
         // 3. 필수 환경변수 확인
         if (!OPENAI_API_KEY) {
-          return jsonResponse({ error: "Missing environment variable" }, 500);
+          return jsonResponse({ error: "missing_environment_variable" }, 500);
         }
 
         // 4. 요청 본문에서 요리명 가져오기
@@ -125,21 +136,38 @@ export default {
         const imageBase64 = imageJson?.data?.[0]?.b64_json ?? null;
         if (!imageBase64) {
           return jsonResponse({
-            error: "Image data missing",
+            error: "image_data_missing",
             detail: "No created image data",
           }, 500);
         }
-        const image_url = imageBase64
-          ? `data:image/png;base64,${imageBase64}`
-          : null;
+        const imageBytes = decodeBase64(imageBase64);
+        // ? `data:image/png;base64,${imageBase64}`
+        // : null;
 
         // 13. Storage에 저장할 이미지 경로 생성
+        const imagePath = `${
+          new Date().toISOString().slice(0, 10)
+        }/${crypto.randomUUID()}.png`;
 
         // 14. 생성된 이미지를 Supabase Storage에 업로드
+        const { error } = await admin.storage.from("recipe").upload(
+          imagePath,
+          imageBytes,
+          { contentType: "image/png", upsert: true },
+        );
 
         // 15. Storage 업로드 오류 확인
+        if (error) {
+          return jsonResponse({
+            error: "storage_upload_failed",
+            detail: error.message,
+          }, 500);
+        }
 
         // 16. 업로드된 이미지의 공개 URL 생성
+        const { data: publicUrlData } = admin.storage.from("recipe")
+          .getPublicUrl(imagePath);
+        const image_url = publicUrlData.publicUrl;
 
         // 17. 레시피와 이미지 정보를 데이터베이스에 저장
         const { error: insertError } = await admin.from("recipes").insert({
