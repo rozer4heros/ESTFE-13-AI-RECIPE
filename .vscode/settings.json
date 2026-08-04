@@ -1,8 +1,8 @@
 {
   "deno.enable": true,
   "deno.lint": true,
-  "deno.enablePaths": ["supabase/functions"],
-  "deno.importMap": "supabase/functions/deno.json",
+  "deno.enablePaths": ["EDGE_FUNC/supabase/functions"],
+  "deno.importMap": "EDGE_FUNC/supabase/functions/deno.json",
   "deno.unstable": [
     "bare-node-builtins",
     "byonm",
